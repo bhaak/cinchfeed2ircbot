@@ -1,0 +1,15 @@
+---
+server: irc.freenode.net
+port: 6667
+ssl: false
+verify_ssl: true
+nick: cinchfeed2ircbot
+user: cinchfeed2ircbot
+real_name: cinch based Feed to IRC bot
+feeds:
+-
+  name: reddit
+  prefix: "Reddit"
+  url: http://www.reddit.com/.rss
+  channels:
+  - '#cinch-bots'
