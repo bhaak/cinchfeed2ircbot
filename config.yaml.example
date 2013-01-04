@@ -2,10 +2,10 @@
 server: irc.freenode.net
 port: 6667
 ssl: false
-verify_ssl: true
+verify_ssl: false
 nick: cinchfeed2ircbot
 user: cinchfeed2ircbot
-real_name: cinch based Feed to IRC bot
+real_name: cinch based feed to IRC bot, http://is.gd/cf2ibot
 feeds:
 -
   name: reddit
