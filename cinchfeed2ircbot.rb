@@ -9,9 +9,8 @@ class Feed
   attr_accessor :name, :feed, :prefix, :channels
 end
 
-# load config
-config = YAML.load(File.open('config.yaml'))
-puts config.to_yaml
+# Load config. If the normal config file doesn't exists, load example.
+config = YAML.load(File.open(File.exists?('config.yaml') ? 'config.yaml' : 'config.yaml.example'))
 
 def check_feed(bot, name, feed)
 	bot.info "Checking for updates for feed #{name}"
