@@ -16,9 +16,6 @@ def check_feed(bot, name, feed)
 	bot.info "Checking for updates for feed #{name}"
 	bot.info feed.to_s
 	updated_feed = Feedzirra::Feed.update(feed.feed)
-	puts updated_feed
-	puts feed.feed.class
-	puts updated_feed.class
 	if updated_feed and updated_feed.updated? then
 		bot.info "Feed #{name} has been updated"
 		# TODO
@@ -89,6 +86,12 @@ bot = Cinch::Bot.new { |b|
 			# TODO: make sleep interval configurable
 			Thread.new { loop { check_feed(bot, name, feed); sleep 600 } }
 		}
+	end
+
+	on :message, /(.*)/ do |m, message|
+		if message.start_with? bot.nick then
+			m.reply config['message'] || "I'm just a dumb bot, ask the person who runs me."
+		end
 	end
 }
 
