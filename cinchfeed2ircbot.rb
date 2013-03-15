@@ -50,6 +50,7 @@ def check_feed(bot, name, feed)
 	end
 end
 
+
 # connect to IRC
 bot = Cinch::Bot.new { |b|
 	configure { |c|
@@ -69,6 +70,7 @@ bot = Cinch::Bot.new { |b|
 			b.info("not using SSL for #{c.nick}@#{c.server}")
 		end
 	}
+	b.loggers.push Cinch::Logger::FormattedLogger.new(File.new("cinchfeed2ircbot.log", "w"))
 
 	on :connect do
 		feeds = Hash.new
