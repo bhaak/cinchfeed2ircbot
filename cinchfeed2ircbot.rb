@@ -13,6 +13,7 @@ end
 config = YAML.load(File.open(File.exists?('config.yaml') ? 'config.yaml' : 'config.yaml.example'))
 
 def check_feed(bot, name, feed)
+	begin
 	bot.info "Checking for updates for feed #{name}"
 	bot.info feed.to_s
 	updated_feed = Feedzirra::Feed.update(feed.feed)
@@ -39,6 +40,13 @@ def check_feed(bot, name, feed)
 			bot.debug entry.to_s
 		}
 		feed.feed = updated_feed
+	end
+	rescue Exception => e
+		bot.error("check_feed: #{e.inspect}")
+		e.backtrace.each {|b|
+			bot.error("check_feed:  #{b}")
+		}
+		raise e
 	end
 end
 
