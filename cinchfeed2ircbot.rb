@@ -4,9 +4,16 @@ require 'bundler/setup'
 require 'feedzirra'
 
 require 'cinch'
+require 'yaml'
+
+require './lib/cinchfeed2ircbot/interval'
 
 class Feed
-  attr_accessor :name, :feed, :prefix, :channels
+	attr_accessor :name, :feed, :prefix, :channels, :timer
+
+	def initialize
+		@timer = CinchFeed2IrcBot::Interval.new
+	end
 end
 
 # Load config. If the normal config file doesn't exists, load example.
@@ -14,10 +21,12 @@ config = YAML.load(File.open(File.exists?('config.yaml') ? 'config.yaml' : 'conf
 
 def check_feed(bot, name, feed)
 	begin
+	sleep feed.timer.next_interval
 	bot.info "Checking for updates for feed #{name}"
 	bot.info feed.to_s
 	updated_feed = Feedzirra::Feed.update(feed.feed)
 	if updated_feed and updated_feed.updated? then
+		feed.timer.reset if feed.feed.new_entries.size > 0
 		bot.info "Feed #{name} has been updated"
 		# TODO
 		# short url
@@ -93,8 +102,8 @@ bot = Cinch::Bot.new { |b|
 
 		# start a new thread for every feed
 		feeds.each {|name, feed|
-			# TODO: make sleep interval configurable
-			Thread.new { loop { check_feed(bot, name, feed); sleep 600 } }
+			Thread.new { loop { check_feed(bot, name, feed); } }
+			sleep 1
 		}
 	end
 
