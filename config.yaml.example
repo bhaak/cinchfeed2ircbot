@@ -6,6 +6,12 @@ verify_ssl: false
 nick: cinchfeed2ircbot
 user: cinchfeed2ircbot
 real_name: cinch based feed to IRC bot, http://is.gd/cf2ibot
+# When talked to, the bot can reply with a configured message
+# message: "This would be a message for all channels the bot is in."
+message:
+  # per-channel messages
+  '#cinch-bots': "This is a reply message for #cinch-bots"
+  'default': "Default message"
 feeds:
 -
   name: reddit

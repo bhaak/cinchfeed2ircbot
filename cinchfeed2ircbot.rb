@@ -109,7 +109,10 @@ bot = Cinch::Bot.new { |b|
 
 	on :message, /(.*)/ do |m, message|
 		if message.start_with? bot.nick then
-			m.reply config['message'] || "I'm just a dumb bot, ask the person who runs me."
+			m.reply config['message'][m.channel.name] ||
+			        config['message']['default'] ||
+			        config['message'] ||
+			        "I'm just a dumb bot, ask the person who runs me."
 		end
 	end
 }
