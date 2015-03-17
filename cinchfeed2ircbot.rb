@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'feedzirra'
+require 'feedjira'
 
 require 'cinch'
 require 'yaml'
@@ -24,7 +24,7 @@ def check_feed(bot, name, feed)
 	sleep feed.timer.next_interval
 	bot.info "Checking for updates for feed #{name}"
 	bot.info feed.to_s
-	updated_feed = Feedzirra::Feed.update(feed.feed)
+	updated_feed = Feedjira::Feed.update(feed.feed)
 	if updated_feed and updated_feed.updated? then
 		feed.timer.reset if feed.feed.new_entries.size > 0
 		bot.info "Feed #{name} has been updated"
@@ -48,6 +48,7 @@ def check_feed(bot, name, feed)
 			}
 			bot.debug entry.to_s
 		}
+		updated_feed.new_entries = []
 		feed.feed = updated_feed
 	end
 	rescue Exception => e
@@ -90,7 +91,7 @@ bot = Cinch::Bot.new { |b|
 			bot.info "Setting up feed #{feed['name']}"
 			# init all RSS threads
 			f = Feed.new
-			f.feed = Feedzirra::Feed.fetch_and_parse(feed['url'])
+			f.feed = Feedjira::Feed.fetch_and_parse(feed['url'])
 			f.prefix = feed['prefix']
 			f.channels = feed['channels']
 			feeds[feed['name']] = f

@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem "feedzirra", :git => "git://github.com/bhaak/feedzirra.git"
+gem "feedjira"
 
 gem 'cinch'
 
