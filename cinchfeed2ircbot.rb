@@ -9,7 +9,7 @@ require 'yaml'
 require './lib/cinchfeed2ircbot/interval'
 
 class Feed
-	attr_accessor :name, :feed, :prefix, :channels, :timer
+	attr_accessor :name, :feed, :prefix, :channels, :timer, :condition
 
 	def initialize
 		@timer = CinchFeed2IrcBot::Interval.new
@@ -40,10 +40,12 @@ def check_feed(bot, name, feed)
 			end
 			# send text to all channels and users
 			feed.channels.each {|channel|
-				if channel.start_with? '#' then
-					Channel(channel).send text
-				else
-					User(channel).send text
+				if eval(feed.condition) then
+					if channel.start_with? '#' then
+						Channel(channel).send text
+					else
+						User(channel).send text
+					end
 				end
 			}
 			bot.debug entry.to_s
@@ -94,6 +96,7 @@ bot = Cinch::Bot.new { |b|
 			f.feed = Feedjira::Feed.fetch_and_parse(feed['url'])
 			f.prefix = feed['prefix']
 			f.channels = feed['channels']
+			f.condition = feed['condition'] || "true"
 			feeds[feed['name']] = f
 			# join all channels in config
 			feed['channels'].each {|channel|
