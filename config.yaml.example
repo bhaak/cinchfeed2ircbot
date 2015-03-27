@@ -14,7 +14,6 @@ message:
   'default': "Default message"
 feeds:
 -
-  name: reddit
   prefix: "Reddit"
   url: http://www.reddit.com/.rss
   channels:

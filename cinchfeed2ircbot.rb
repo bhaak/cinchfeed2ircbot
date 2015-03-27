@@ -9,7 +9,7 @@ require 'yaml'
 require './lib/cinchfeed2ircbot/interval'
 
 class Feed
-	attr_accessor :name, :feed, :prefix, :channels, :timer, :condition
+	attr_accessor :feed, :prefix, :channels, :timer, :condition
 
 	def initialize
 		@timer = CinchFeed2IrcBot::Interval.new
@@ -90,14 +90,14 @@ bot = Cinch::Bot.new { |b|
 		# loop over all RSS feeds
 		config['feeds'].each {|feed|
 			bot.debug feed.to_s
-			bot.info "Setting up feed #{feed['name']}"
+			bot.info "Setting up feed #{feed['prefix']}"
 			# init all RSS threads
 			f = Feed.new
 			f.feed = Feedjira::Feed.fetch_and_parse(feed['url'])
 			f.prefix = feed['prefix']
 			f.channels = feed['channels']
 			f.condition = feed['condition'] || "true"
-			feeds[feed['name']] = f
+			feeds[feed['prefix'].to_sym] = f
 			# join all channels in config
 			feed['channels'].each {|channel|
 				bot.join channel if channel.start_with? '#'
