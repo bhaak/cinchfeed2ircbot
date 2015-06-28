@@ -18,6 +18,8 @@ class Feed
 	end
 end
 
+$reddit = []
+
 # Load config. If the normal config file doesn't exists, load example.
 config = YAML.load(File.open(File.exists?('config.yaml') ? 'config.yaml' : 'config.yaml.example'))
 
@@ -40,11 +42,23 @@ def check_feed(bot, name, feed)
 			else
 				text = "#{feed.prefix}: #{entry.title}"
 			end
+
 			# send text to all channels and users
 			feed.channels.each {|channel|
 				if eval(feed.condition) then
+					post_link = true
+					if channel == "#RBTV"
+						sleep 180
+						link_already_posted = $reddit.find {|m| m.include? entry.url.match(%r{comments/([^/]*)/})[1] }
+						submitted_by_praktikante = entry.summary.include? "http://www.reddit.com/user/Praktikante"
+						post_link = !link_already_posted && !submitted_by_praktikante
+
+						# Reddit-Shortlink
+						text = "#{$1} - #{$2}/#{$3}" if text =~ %r{(.*) http.*//(www.reddit.com).*comments.([^/]+)}
+					end
+
 					if channel.start_with? '#' then
-						Channel(channel).send text
+						Channel(channel).send text if post_link
 					else
 						User(channel).send text
 					end
@@ -119,6 +133,8 @@ bot = Cinch::Bot.new { |b|
 			        config['message']['default'] ||
 			        config['message'] ||
 			        "I'm just a dumb bot, ask the person who runs me."
+		elsif message.include? "https://www.reddit.com/r/"
+			$reddit << message
 		end
 	end
 }
