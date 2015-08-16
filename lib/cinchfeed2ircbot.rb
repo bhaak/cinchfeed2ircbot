@@ -9,6 +9,7 @@ require 'yaml'
 $LOAD_PATH.unshift File.expand_path('..', __FILE__)
 
 require 'cinchfeed2ircbot/interval'
+require 'sendeplan'
 
 class Feed
 	attr_accessor :feed, :prefix, :channels, :timer, :condition
@@ -22,6 +23,7 @@ $reddit = []
 
 # Load config. If the normal config file doesn't exists, load example.
 config = YAML.load(File.open(File.exists?('config.yaml') ? 'config.yaml' : 'config.yaml.example'))
+config['prefix'] ||= '!'
 
 def check_feed(bot, name, feed)
 	begin
@@ -127,7 +129,12 @@ bot = Cinch::Bot.new { |b|
 	end
 
 	on :message, /(.*)/ do |m, message|
-		if message.start_with? bot.nick then
+		if message.downcase == "#{config["prefix"]}sendeplan" then
+			sendungen = Sendeplan.jetzt_und_danach
+			m.reply "#{m.user.name}: Gerade läuft #{sendungen[0]}."
+			sleep 1
+			m.reply "#{m.user.name}: Danach kommt #{sendungen[1]}."
+		elsif message.start_with? bot.nick then
 			m.reply config['message'][m.channel.name] ||
 			        config['message']['default'] ||
 			        config['message'] ||
