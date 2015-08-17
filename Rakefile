@@ -7,7 +7,7 @@ load File.expand_path('lib/tasks/spec.rake')
 
 desc 'run cinchfeed2ircbot'
 task :run do
-  load './cinchfeed2ircbot.rb'
+  load './lib/cinchfeed2ircbot.rb'
 end
 
 task :default => :run

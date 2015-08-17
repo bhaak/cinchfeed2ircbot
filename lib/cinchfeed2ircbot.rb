@@ -6,7 +6,9 @@ require 'feedjira'
 require 'cinch'
 require 'yaml'
 
-require './lib/cinchfeed2ircbot/interval'
+$LOAD_PATH.unshift File.expand_path('..', __FILE__)
+
+require 'cinchfeed2ircbot/interval'
 
 class Feed
 	attr_accessor :feed, :prefix, :channels, :timer, :condition
