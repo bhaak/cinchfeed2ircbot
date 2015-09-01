@@ -2,32 +2,34 @@
 
 require 'cinchfeed2ircbot/interval'
 
+module CinchFeed2IrcBot
+
 describe Interval do
   describe "the constructor" do
     it "should have a default wait time" do
-      Interval.new.wait_time.should > 0
+      expect(Interval.new.wait_time).to be > 0
     end
 
     it "should accept a custom wait time" do
-      Interval.new(120).wait_time == 120
+      expect(Interval.new(120).wait_time).to eq 120
     end
   end
 
   describe "next_interval" do
     it "should return a positive integer" do
-      Interval.new.next_interval.should > 0
+      expect(Interval.new.next_interval).to be > 0
     end
 
     it "should return wait_time after 5 calls" do
       wait_time = 1000
       interval = Interval.new(wait_time)
       4.times { interval.next_interval }
-      interval.next_interval.should == wait_time
+      expect(interval.next_interval).to eq wait_time
     end
 
     it "should not return an integer greater than wait_time" do
       interval = Interval.new(1)
-      5.times { interval.next_interval.should == 1 }
+      5.times { expect(interval.next_interval).to be 1 }
     end
 
     it "should return increasing intervalls with multiple calls" do
@@ -35,13 +37,13 @@ describe Interval do
 
       first_call = interval.next_interval
       second_call = interval.next_interval
-      second_call.should > first_call
+      expect(second_call).to be > first_call
 
       third_call = interval.next_interval
-      third_call.should > second_call
+      expect(third_call).to be > second_call
 
       fourth_call = interval.next_interval
-      fourth_call.should > third_call
+      expect(fourth_call).to be > third_call
     end
 
     it "should be able to be reset" do
@@ -49,11 +51,13 @@ describe Interval do
       first_call = interval.next_interval
 
       5.times { interval.next_interval }
-      interval.next_interval > first_call
+      expect(interval.next_interval).to be > first_call
 
       interval.reset
 
-      interval.next_interval == first_call
+      expect(interval.next_interval).to eq first_call
     end
   end
+end
+
 end
