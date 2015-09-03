@@ -1,5 +1,6 @@
 require 'json'
 require 'open-uri'
+require 'nokogiri'
 
 class Sendeplan
   def self.format_item(item)
@@ -18,6 +19,19 @@ class Sendeplan
     open(url) do |cal|
       events = JSON.parse cal.read, symbolize_names: true
       [format_item(events[:items][0]), format_item(events[:items][1])]
+    end
+  end
+end
+
+class RBTV
+  def self.live_zuschauer
+    begin
+      data = open('https://api.twitch.tv/kraken/streams/rocketbeanstv')
+      json = JSON.parse(data.read)
+      # format numbers with the German thousands separator
+      json["stream"]["viewers"].to_s.reverse.scan(/.{1,3}/).join('.').reverse
+    rescue => e
+      e.to_s
     end
   end
 end
