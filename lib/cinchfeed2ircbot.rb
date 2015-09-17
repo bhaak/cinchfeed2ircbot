@@ -135,7 +135,7 @@ bot = Cinch::Bot.new { |b|
 			sleep 1
 			m.reply "#{m.user.name}: Danach kommt #{sendungen[1]}."
 		elsif message.downcase == "#{config["prefix"]}zuschauer" then
-			m.reply "#{m.user.name}: Gerade schauen #{RBTV.live_zuschauer} Zuschauer zu."
+			m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung}"
 		elsif message.start_with? bot.nick then
 			m.reply config['message'][m.channel.name] ||
 			        config['message']['default'] ||
