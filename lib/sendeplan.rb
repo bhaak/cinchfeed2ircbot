@@ -24,20 +24,28 @@ class Sendeplan
 end
 
 class RBTV
-  def self.live_zuschauer
+  def initialize
+    @data = open('https://api.twitch.tv/kraken/streams/rocketbeanstv')
+    @json = JSON.parse(@data.read)
+  end
+
+  def live_zuschauer
     begin
-      data = open('https://api.twitch.tv/kraken/streams/rocketbeanstv')
-      json = JSON.parse(data.read)
       # format numbers with the German thousands separator
-      json["stream"]["viewers"].to_s.reverse.scan(/.{1,3}/).join('.').reverse if json["stream"]
+      @json["stream"]["viewers"].to_s.reverse.scan(/.{1,3}/).join('.').reverse if @json["stream"]
     rescue => e
       e.to_s
     end
   end
 
+  def thema
+    @json["stream"]["channel"]["status"].split('|').first.strip
+  end
+
   def self.aktuelle_sendung
-    live_zuschauer = self.live_zuschauer
-    live_zuschauer ? "Gerade schauen #{RBTV.live_zuschauer} Zuschauer zu." :
+    rbtv = RBTV.new
+    live_zuschauer = rbtv.live_zuschauer
+    live_zuschauer ? "Gerade schauen #{rbtv.live_zuschauer} Zuschauer #{rbtv.thema}." :
       "RBTV scheint gerade nicht zu senden."
   end
 end
