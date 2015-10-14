@@ -103,7 +103,6 @@ bot = Cinch::Bot.new { |b|
 
 	on :connect do
 		feeds = Hash.new
-		channels = Hash.new
 		# loop over all RSS feeds
 		config['feeds'].each {|feed|
 			bot.debug feed.to_s
@@ -128,23 +127,32 @@ bot = Cinch::Bot.new { |b|
 		}
 	end
 
-	on :message, /(.*)/ do |m, message|
-		if message.downcase == "#{config["prefix"]}sendeplan" then
-			sendungen = Sendeplan.jetzt_und_danach
-			m.reply "#{m.user.name}: Gerade läuft #{sendungen[0]}."
-			sleep 1
-			m.reply "#{m.user.name}: Danach kommt #{sendungen[1]}."
-		elsif message.downcase == "#{config["prefix"]}zuschauer" then
-			m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung}"
-		elsif message.start_with? bot.nick then
-			m.reply config['message'][m.channel.name] ||
-			        config['message']['default'] ||
-			        config['message'] ||
-			        "I'm just a dumb bot, ask the person who runs me."
-		elsif message.include? "https://www.reddit.com/r/"
-			$reddit << message
-		end
-	end
+
+  on :message, /(.*)/ do |m, message|
+    begin
+      if message.downcase == "#{config["prefix"]}sendeplan" then
+        sendungen = Sendeplan.jetzt_und_danach
+        m.reply "#{m.user.name}: Gerade läuft #{sendungen[0]}."
+        sleep 1
+        m.reply "#{m.user.name}: Danach kommt #{sendungen[1]}."
+
+      elsif message.downcase == "#{config["prefix"]}zuschauer" then
+        m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung}"
+
+      elsif message.start_with? bot.nick then
+        m.reply config['message'][m.channel.name] ||
+          config['message']['default'] ||
+          config['message'] ||
+          "I'm just a dumb bot, ask the person who runs me."
+
+      elsif message.include? "https://www.reddit.com/r/"
+        $reddit << message
+      end
+    rescue => e
+      bot.error e.to_s
+      m.reply "#{m.user.name}: #{e.to_s}"
+    end
+  end
 }
 
 bot.start
