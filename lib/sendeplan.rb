@@ -48,4 +48,14 @@ class RBTV
     live_zuschauer ? "Gerade schauen #{rbtv.live_zuschauer} Zuschauer #{rbtv.thema}." :
       "RBTV scheint gerade nicht zu senden."
   end
+
+  def self.sofia_schnuerrle_interview_count
+    key = File.read(File.expand_path("~/.google_api_keys/youtube_data")).strip
+    url = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=NSx0_18lC5w&key=#{key}"
+
+    open(url) do |request|
+      data = JSON.parse(request.read, symbolize_names: true)
+      data[:items].first[:statistics][:viewCount].to_s.reverse.scan(/.{1,3}/).join('.').reverse
+    end
+  end
 end

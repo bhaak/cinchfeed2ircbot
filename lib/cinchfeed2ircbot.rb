@@ -127,7 +127,6 @@ bot = Cinch::Bot.new { |b|
 		}
 	end
 
-
   on :message, /(.*)/ do |m, message|
     begin
       if message.downcase == "#{config["prefix"]}sendeplan" then
@@ -138,6 +137,10 @@ bot = Cinch::Bot.new { |b|
 
       elsif message.downcase == "#{config["prefix"]}zuschauer" then
         m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung}"
+
+      elsif message.downcase == "#{config["prefix"]}sofia"
+        views = RBTV.sofia_schnuerrle_interview_count
+        m.reply "#{m.user.name}: #{views} Views hat Sofias Interview mit diesem unbekannten Fußballer."
 
       elsif message.start_with? bot.nick then
         m.reply config['message'][m.channel.name] ||
