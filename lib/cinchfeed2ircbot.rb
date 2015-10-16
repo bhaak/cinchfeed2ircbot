@@ -51,11 +51,11 @@ def check_feed(bot, name, feed)
 					post_link = true
 					if channel == "#RBTV"
 						link_already_posted = $reddit.find {|m| m.include? entry.url.match(%r{comments/([^/]*)/})[1] }
-						submitted_by_praktikante = entry.summary.include? "http://www.reddit.com/user/Praktikante"
+						submitted_by_praktikante = entry.summary.include? "://www.reddit.com/user/Praktikante"
 						post_link = !link_already_posted && !submitted_by_praktikante
 
 						# Reddit-Shortlink
-						text = "#{$1} - #{$2}/#{$3}" if text =~ %r{(.*)http.*//(www.reddit.com).*comments\/([^/]+\/[^/]+\/.+|[^/]+)}
+						text = "#{$1.strip} - https://#{$2}/#{$3}" if text =~ %r{(.*)http.*//(www.reddit.com).*comments\/([^/]+\/[^/]+\/.+|[^/]+)}
 					end
 
 					if channel.start_with? '#' then
