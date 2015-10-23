@@ -58,4 +58,18 @@ class RBTV
       data[:items].first[:statistics][:viewCount].to_s.reverse.scan(/.{1,3}/).join('.').reverse
     end
   end
+
+  def self.ist_das_live
+    begin
+      url = "http://rbtvapi.rodney.io/islive"
+      open(url) do |request|
+        data = JSON.parse(request.read, symbolize_names: true)
+
+        return "Da stimmt was nicht: #{data[:error]}" if data[:error] != "ok"
+        "Das ist #{data[:islive] ? "" : "nicht "}live!"
+      end
+    rescue => e
+      e.to_s
+    end
+  end
 end

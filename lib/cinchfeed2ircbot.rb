@@ -142,6 +142,10 @@ bot = Cinch::Bot.new { |b|
         views = RBTV.sofia_schnuerrle_interview_count
         m.reply "#{m.user.name}: #{views} Views hat Sofias Interview mit diesem unbekannten Fußballer."
 
+      elsif message.strip.downcase == "#{config["prefix"]}live" ||
+            message.strip.downcase == "ist das live?"
+        m.reply "#{m.user.name}: #{RBTV.ist_das_live}"
+
       elsif message.start_with? bot.nick then
         m.reply config['message'][m.channel.name] ||
           config['message']['default'] ||
