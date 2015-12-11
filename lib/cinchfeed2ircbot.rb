@@ -26,7 +26,7 @@ def check_feed(bot, name, feed)
 	sleep feed.timer.next_interval
 	bot.info "Checking for updates for feed #{name}"
 	bot.info feed.to_s
-	updated_feed = Feedjira::Feed.update(feed.feed)
+  updated_feed = Feedjira::Feed.update(feed.feed) rescue nil
 	if updated_feed.respond_to?("updated?") and updated_feed.updated? then
 		feed.timer.reset if feed.feed.new_entries.size > 0
 		bot.info "Feed #{name} has been updated"
