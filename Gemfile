@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem "feedjira"
+gem "feedjira",  '~> 1.6.0'
 
 gem 'cinch'
 
