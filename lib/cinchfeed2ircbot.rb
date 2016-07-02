@@ -19,6 +19,10 @@ class Feed
 	end
 end
 
+# loading plugins
+plugins_paths = $LOAD_PATH.map {|path| path+"/plugins"}.select {|path| File.exists?(path) }
+plugins_paths.map {|path| Dir.glob(path+"/*.rb")}.flatten.each {|plugin| load plugin }
+
 $reddit = []
 
 # Load config. If the normal config file doesn't exists, load example.
@@ -161,5 +165,8 @@ bot = Cinch::Bot.new { |b|
     end
   end
 }
+
+# load configured plugins
+bot.plugins.register_plugins((config["plugins"]||[]).map {|plugin| Module.const_get plugin })
 
 bot.start
