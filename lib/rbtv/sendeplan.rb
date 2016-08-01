@@ -1,17 +1,17 @@
 require 'open-uri'
 require 'nokogiri'
+require 'json'
 
 class Sendeplan
   class Show
     attr_reader :time
 
-    def initialize(xml)
-      @time = Time.parse(xml.at_css(".scheduleTime").text)
-      show_details = xml.at_css(".showDetails")
-      @title = show_details.at_css("h4").text
-      @sub_title = show_details.at_css(".game")&.text
-      @duration = show_details.at_css(".showDuration")
-      @prefix = show_details.at_css(".smallBtn")&.text
+    def initialize(data)
+      @start_time = Time.parse(data[:timeStart])
+      @end_time = Time.parse(data[:timeEnd])
+      @title = data[:title]
+      @sub_title = data[:topic]
+      @prefix = data[:type]
     end
 
     def title
@@ -19,17 +19,15 @@ class Sendeplan
     end
 
     def start_time
-      @time.strftime("%H:%M")
+      @start_time.strftime("%H:%M")
     end
 
     def end_time
-      /(?:(\d+) Std. )?(\d+) Min./.match(@duration)
-      minutes = $1.to_i*60+$2.to_i
-      (@time+minutes*60).strftime("%H:%M")
+      @end_time.strftime("%H:%M")
     end
 
     def prefix
-      @prefix ? "[#{@prefix[0].upcase}] " : ""
+      @prefix.length > 0 ? "[#{@prefix[0].upcase}] " : ""
     end
 
     def to_s
@@ -38,12 +36,16 @@ class Sendeplan
   end
 
   def self.jetzt_und_danach
-    wochenplan = Nokogiri::HTML(open("https://www.rocketbeans.tv/wochenplan/"))
-    today = wochenplan.at_css(".today")
-    binding.pry
-    shows = today.css(".show").map {|show| Show.new(show) }
+    begin
+      url = "http://api.rbtv.rodney.io/api/1.0/schedule/schedule_linear.json"
+      open(url) do |request|
+        data = JSON.parse(request.read, symbolize_names: true)
 
-    [shows.reverse.find {|show| show.time <= Time.now }.to_s,
-     shows.find {|show| show.time >= Time.now }.to_s].compact
+        index = data[:schedule].find_index {|e| Time.now < Time.parse(e[:timeEnd]) }.to_i
+        [Show.new(data[:schedule][index]), Show.new(data[:schedule][index+1])]
+      end
+    rescue => e
+      e.to_s
+    end
   end
 end
