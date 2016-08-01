@@ -9,7 +9,9 @@ require 'yaml'
 $LOAD_PATH.unshift File.expand_path('..', __FILE__)
 
 require 'cinchfeed2ircbot/interval'
-require 'sendeplan'
+
+require 'rbtv/rbtv'
+require 'rbtv/sendeplan'
 
 class Feed
 	attr_accessor :feed, :prefix, :channels, :timer, :condition
