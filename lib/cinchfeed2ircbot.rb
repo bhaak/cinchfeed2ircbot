@@ -152,6 +152,9 @@ bot = Cinch::Bot.new { |b|
             message.strip.downcase == "ist das live?"
         m.reply "#{m.user.name}: #{RBTV.ist_das_live}"
 
+      elsif message.downcase.start_with? "#{config["prefix"]}shitstorm"
+        m.reply "#{m.user.name}: #{RBTV.shitstorm?}"
+
       elsif message.start_with? bot.nick then
         m.reply config['message'][m.channel.name] ||
           config['message']['default'] ||

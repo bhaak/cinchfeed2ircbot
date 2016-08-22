@@ -51,4 +51,25 @@ class RBTV
       e.to_s
     end
   end
+
+  def self.shitstorm?
+    begin
+      neins = ["Anscheinend nicht.",
+               "Sieht nicht so aus.",
+               "Ich glaube nicht.",
+               "Ich weiss von nichts.",
+               "Nicht, dass ich wüsste.",]
+
+      url = "https://rbtvshitstorm.is/"
+      html = Nokogiri::HTML(open(url))
+      link = html.at_css(".rbtv a")
+      if link && link.text == "JA"
+        "Natürlich! Schau mal hier: #{link.attr('href')}"
+      else
+        neins[Time.now.to_i % neins.size]
+      end
+    rescue => e
+      e.to_s
+    end
+  end
 end
