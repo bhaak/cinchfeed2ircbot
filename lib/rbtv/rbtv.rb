@@ -21,11 +21,27 @@ class RBTV
     @json["stream"]["channel"]["status"].split('|').first.strip
   end
 
-  def self.aktuelle_sendung
+  def self.aktuelle_sendung_twitch
     rbtv = RBTV.new
     live_zuschauer = rbtv.live_zuschauer
     live_zuschauer ? "Gerade schauen #{rbtv.live_zuschauer} Zuschauer #{rbtv.thema}." :
       "RBTV scheint gerade nicht zu senden."
+  end
+
+  def self.aktuelle_sendung_youtube
+    url = "https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=mT0TbIqBliw&key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w"
+
+    open(url) do |request|
+      data = JSON.parse(request.read, symbolize_names: true)
+      item = data[:items].first
+      if item
+        thema = item[:snippet][:title]
+        live_zuschauer = item[:liveStreamingDetails][:concurrentViewers].reverse.scan(/.{1,3}/).join('.').reverse
+        "Gerade schauen #{live_zuschauer} Zuschauer #{thema}."
+      else
+        "RBTV scheint gerade nicht zu senden."
+      end
+    end
   end
 
   def self.sofia_schnuerrle_interview_count
