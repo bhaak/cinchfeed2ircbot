@@ -29,7 +29,12 @@ class RBTV
   end
 
   def self.aktuelle_sendung_youtube
-    url = "https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=mT0TbIqBliw&key=AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w"
+    key = "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w"
+    live_url = "https://www.youtube.com/c/rocketbeanstv/live"
+    html = Nokogiri::HTML(open(live_url))
+    video_id = html.xpath('//meta[@itemprop="videoId"]').map {|n| n.attr('content') }.first
+
+    url = "https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=#{video_id}&key=#{key}"
 
     open(url) do |request|
       data = JSON.parse(request.read, symbolize_names: true)
