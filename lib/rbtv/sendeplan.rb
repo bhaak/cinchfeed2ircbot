@@ -12,6 +12,7 @@ class Sendeplan
       @title = data[:title]
       @sub_title = data[:topic]
       @prefix = data[:type]
+      @youtube = data[:youtube]
     end
 
     def title
@@ -30,8 +31,12 @@ class Sendeplan
       @prefix.length > 0 ? "[#{@prefix[0].upcase}] " : ""
     end
 
+    def youtube
+      @youtube.to_s.empty? ? "" : "(https://youtu.be/#{@youtube})"
+    end
+
     def to_s
-      "#{prefix}#{title} von #{start_time} bis #{end_time} Uhr"
+      "#{prefix}#{title} von #{start_time} bis #{end_time} Uhr #{youtube}".strip
     end
   end
 

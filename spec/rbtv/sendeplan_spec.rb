@@ -46,5 +46,11 @@ describe "Sendeplan::Show" do
       show_data[:type] = ""
       expect(show.to_s).to eq "Almost Daily #248 - Fett & Feilschen von 12:25 bis 12:38 Uhr"
     end
+
+    it "appends a youtube link if available" do
+      show_data[:youtube] = "ABCDEF"
+      expect(show.to_s).to eq "[W] Almost Daily #248 - Fett & Feilschen von 12:25 bis 12:38 Uhr (https://youtu.be/ABCDEF)"
+    end
   end
+
 end
