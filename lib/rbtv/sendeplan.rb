@@ -16,7 +16,7 @@ class Sendeplan
     end
 
     def title
-      @sub_title ? "#{@title} - #{@sub_title}" : @title
+      @sub_title.to_s.empty? ? @title : "#{@title} - #{@sub_title}"
     end
 
     def start_time
