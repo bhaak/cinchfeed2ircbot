@@ -141,15 +141,11 @@ bot = Cinch::Bot.new { |b|
         sleep 1
         m.reply "#{m.user.name}: Danach kommt #{sendungen[1]}."
 
-      elsif message.downcase == "#{config["prefix"]}zuschauer" &&
-            Date.today > Date.parse("2016-08-31") then
-        m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_youtube}"
+      elsif message.downcase == "#{config["prefix"]}zuschauer" then
+        m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung}"
 
       elsif message.downcase == "#{config["prefix"]}zuschauer_youtube" then
         m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_youtube}"
-
-      elsif message.downcase == "#{config["prefix"]}zuschauer" then
-        m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_twitch}"
 
       elsif message.downcase == "#{config["prefix"]}zuschauer_twitch" then
         m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_twitch}"

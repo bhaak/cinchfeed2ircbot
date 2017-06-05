@@ -2,6 +2,12 @@ require 'json'
 require 'open-uri'
 require 'nokogiri'
 
+class Fixnum
+  def german
+    to_s.reverse.scan(/.{1,3}/).join('.').reverse
+  end
+end
+
 class RBTV
   def initialize
     @data = open('https://api.twitch.tv/kraken/streams/rocketbeanstv')
@@ -9,26 +15,43 @@ class RBTV
   end
 
   def live_zuschauer
-    begin
-      # format numbers with the German thousands separator
-      @json["stream"]["viewers"].to_s.reverse.scan(/.{1,3}/).join('.').reverse if @json["stream"]
-    rescue => e
-      e.to_s
-    end
+    @json["stream"]["viewers"].to_i
   end
 
   def thema
     @json["stream"]["channel"]["status"].split('|').first.strip
   end
 
+  def daten_aktuelle_sendung_twitch
+    { zuschauer: live_zuschauer, thema: thema }
+  end
+
+  def self.aktuelle_sendung
+    twitch = RBTV.new.daten_aktuelle_sendung_twitch
+    youtube = daten_aktuelle_sendung_youtube
+    if youtube[:thema].size > twitch[:thema].size && youtube[:thema].start_with?(twitch[:thema])
+      twitch[:thema] = youtube[:thema]
+    end
+    if twitch[:thema].size > youtube[:thema].size && twitch[:thema].start_with?(youtube[:thema])
+      youtube[:thema] = twitch[:thema]
+    end
+
+    if twitch[:thema] == youtube[:thema]
+      "Gerade schauen #{(twitch[:zuschauer]+youtube[:zuschauer]).german} Zuschauer #{twitch[:thema]}. "+
+        "Auf Twitch #{twitch[:zuschauer].german} und auf YouTube #{youtube[:zuschauer].german}."
+    else
+      "Gerade schauen #{(twitch[:zuschauer]+youtube[:zuschauer]).german} Zuschauer RBTV. "+
+        "Auf Twitch schauen #{twitch[:zuschauer].german} Zuschauer #{twitch[:thema]} und auf YouTube schauen #{youtube[:zuschauer].german} Zuschauer #{youtube[:thema]}."
+    end
+  end
+
   def self.aktuelle_sendung_twitch
-    rbtv = RBTV.new
-    live_zuschauer = rbtv.live_zuschauer
-    live_zuschauer ? "Gerade schauen #{rbtv.live_zuschauer} Zuschauer #{rbtv.thema}." :
+    rbtv = RBTV.new.daten_aktuelle_sendung_twitch
+    rbtv[:zuschauer] ? "Gerade schauen #{rbtv[:zuschauer].german} Zuschauer #{rbtv[:thema]}." :
       "RBTV scheint gerade nicht zu senden."
   end
 
-  def self.aktuelle_sendung_youtube
+  def self.daten_aktuelle_sendung_youtube
     key = "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w"
     live_url = "https://www.youtube.com/c/rocketbeanstv/live"
     html = Nokogiri::HTML(open(live_url))
@@ -41,11 +64,20 @@ class RBTV
       item = data[:items].first
       if item
         thema = item[:snippet][:title]
-        live_zuschauer = item[:liveStreamingDetails][:concurrentViewers].reverse.scan(/.{1,3}/).join('.').reverse
-        "Gerade schauen #{live_zuschauer} Zuschauer #{thema}."
+        live_zuschauer = item[:liveStreamingDetails][:concurrentViewers].to_i
+        { zuschauer: live_zuschauer, thema: thema }
       else
-        "RBTV scheint gerade nicht zu senden."
+        {}
       end
+    end
+  end
+
+  def self.aktuelle_sendung_youtube
+    aktuelle_sendung = daten_aktuelle_sendung_youtube
+    if !aktuelle_sendung.empty?
+      "Gerade schauen #{aktuelle_sendung[:zuschauer].german} Zuschauer #{aktuelle_sendung[:thema]}."
+    else
+      "RBTV scheint gerade nicht zu senden."
     end
   end
 
