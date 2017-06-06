@@ -8,6 +8,12 @@ class Fixnum
   end
 end
 
+class String
+  def shuffle
+    size <= 1 ? self : self[0]+[*self[1..-2].chars].shuffle*""+self[-1]
+  end
+end
+
 class RBTV
   def initialize
     @data = open('https://api.twitch.tv/kraken/streams/rocketbeanstv')
@@ -125,4 +131,9 @@ class RBTV
       e.to_s
     end
   end
+
+  def self.zuschauer_innen
+    aktuelle_sendung.scan(/(?:[A-Za-z]+|[^A-Za-z]+)/).map {|w| w =~ /[A-Za-z]+/ ? w.shuffle : w }.join
+  end
+
 end

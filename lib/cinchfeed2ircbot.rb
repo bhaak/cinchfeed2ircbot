@@ -150,6 +150,9 @@ bot = Cinch::Bot.new { |b|
       elsif message.downcase == "#{config["prefix"]}zuschauer_twitch" then
         m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_twitch}"
 
+      elsif message.downcase == "#{config["prefix"]}zuschauer_innen" then
+        m.reply "#{m.user.name}: #{RBTV.zuschauer_innen}"
+
       elsif message.downcase == "#{config["prefix"]}sofia"
         views = RBTV.sofia_schnuerrle_interview_count
         m.reply "#{m.user.name}: #{views} Views hat Sofias Interview mit diesem unbekannten Fußballer."
