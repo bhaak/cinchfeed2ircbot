@@ -136,4 +136,25 @@ class RBTV
     aktuelle_sendung.scan(/(?:[A-Za-z]+|[^A-Za-z]+)/).map {|w| w =~ /[A-Za-z]+/ ? w.shuffle : w }.join
   end
 
+  def self.aktuelle_sendung_mixer
+    rbtv = daten_aktuelle_sendung_mixer
+    rbtv[:zuschauer] ? "Gerade schauen #{rbtv[:zuschauer].german} Zuschauer #{rbtv[:thema]}." :
+      "RBTV scheint gerade nicht zu senden."
+  end
+
+  def self.daten_aktuelle_sendung_mixer
+    url = "https://mixer.com/api/v1/users/8991587"
+    open(url) do |request|
+      data = JSON.parse(request.read, symbolize_names: true)
+      channel = data[:channel]
+      if channel[:online]
+        thema = channel[:name].to_s.strip
+        live_zuschauer = channel[:viewersCurrent]
+        { zuschauer: live_zuschauer, thema: thema }
+      else
+        {}
+      end
+    end
+  end
+
 end
