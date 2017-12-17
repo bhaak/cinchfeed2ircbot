@@ -58,24 +58,11 @@ class RBTV
   end
 
   def self.daten_aktuelle_sendung_youtube
-    key = "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w"
     live_url = "https://www.youtube.com/c/rocketbeanstv/live"
     html = Nokogiri::HTML(open(live_url))
     video_id = html.xpath('//meta[@itemprop="videoId"]').map {|n| n.attr('content') }.first
 
-    url = "https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=#{video_id}&key=#{key}"
-
-    open(url) do |request|
-      data = JSON.parse(request.read, symbolize_names: true)
-      item = data[:items].first
-      if item
-        thema = item[:snippet][:title]
-        live_zuschauer = item[:liveStreamingDetails][:concurrentViewers].to_i
-        { zuschauer: live_zuschauer, thema: thema }
-      else
-        {}
-      end
-    end
+    daten_youtube_api video_id
   end
 
   def self.aktuelle_sendung_youtube
@@ -150,6 +137,38 @@ class RBTV
       if channel[:online]
         thema = channel[:name].to_s.strip
         live_zuschauer = channel[:viewersCurrent]
+        { zuschauer: live_zuschauer, thema: thema }
+      else
+        {}
+      end
+    end
+  end
+
+  def self.aktuelle_sendung_funk
+    funk = daten_aktuelle_sendung_funk
+    funk[:zuschauer] ? "Gerade schauen #{funk[:zuschauer].german} Zuschauer #{funk[:thema]}." :
+      "Funk scheint gerade nicht zu senden."
+  end
+
+  def self.daten_aktuelle_sendung_funk
+    live_url = "https://www.youtube.com/channel/UCOgPGtSnFR6GM-AkzCnxqMQ/videos"
+    html = Nokogiri::HTML(open(live_url))
+    video_id = html.at_css('.yt-badge-live').parent.parent.parent.parent.at_css('a').attributes['href'].value[9..-1] rescue nil
+
+    return {} if video_id.nil?
+
+    daten_youtube_api video_id
+  end
+
+  def self.daten_youtube_api video_id
+    key = "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w"
+    url = "https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails,snippet&id=#{video_id}&key=#{key}"
+    open(url) do |request|
+      data = JSON.parse(request.read, symbolize_names: true)
+      item = data[:items].first
+      if item
+        thema = item[:snippet][:title]
+        live_zuschauer = item[:liveStreamingDetails][:concurrentViewers].to_i
         { zuschauer: live_zuschauer, thema: thema }
       else
         {}

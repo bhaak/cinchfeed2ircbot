@@ -153,6 +153,9 @@ bot = Cinch::Bot.new { |b|
       elsif message.downcase == "#{config["prefix"]}zuschauer_mixer" then
         m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_mixer}"
 
+      elsif message.downcase == "#{config["prefix"]}zuschauer_funk" then
+        m.reply "#{m.user.name}: #{RBTV.aktuelle_sendung_funk}"
+
       elsif message.downcase == "#{config["prefix"]}zuschauer_innen" then
         m.reply "#{m.user.name}: #{RBTV.zuschauer_innen}"
 
